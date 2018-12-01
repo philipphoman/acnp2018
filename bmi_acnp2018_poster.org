@@ -1,0 +1,328 @@
+#+startup: beamer
+#+TITLE: Striatal volume and functional connectivity predict weight gain
+#+TITLE: in early-phase psychosis
+* Preamble                                                    :ignore:
+** General comments                                           :ignore:
+# ----------------------------------------------------------------------
+# - Turn on synonyms by starting synosaurus-mode
+# - Look up words using C-c sr
+# - Turn on dictionary by starting flyspell-mode
+# - Count words by section using org-wc-display
+# ----------------------------------------------------------------------
+** Specific comments for this manuscript                       :ignore:
+# ----------------------------------------------------------------------
+** org specific settings                                        :ignore:
+# ----------------------------------------------------------------------
+#+OPTIONS: email:nil toc:nil num:nil author:nil date:t tex:t title:nil
+#+STARTUP: align fold
+#+SEQ_TODO: TODO(t) | DONE(d)
+#+TAGS: figure(f) check(c) noexport(n) ignore(i)
+#+LANGUAGE: en
+#+EXCLUDE_TAGS: noexport TODO
+#+DATE: {{{time(%Y-%m-%d %H:%M)}}}
+# ----------------------------------------------------------------------
+** Latex header                                                 :ignore:
+# ----------------------------------------------------------------------
+#+LATEX_CLASS:  mybeamerposter
+#+LATEX_HEADER:  \setlength{\paperwidth}{36in}
+#+LATEX_HEADER:  \setlength{\paperheight}{48in}
+# LATEX_HEADER: \setlength{\textwidth}{0.98\paperwidth}
+# LATEX_HEADER: \setlength{\textheight}{0.98\paperheight}
+# LATEX_HEADER: \usepackage[absolute,overlay]{textpos}
+#+LATEX_HEADER: \graphicspath{{../output/figures/}{../lib/}}
+#+LATEX_HEADER: \usepackage[export]{adjustbox}
+#+LATEX_HEADER: \usepackage{graphicx,caption}
+#+LATEX_HEADER: \usepackage{eurosym}
+#+LATEX_HEADER: \usepackage{textcomp}
+#+LATEX_HEADER: \usepackage{bibentry}
+# LATEX_HEADER: \setlength{\TPVertModule}{1cm}
+# LATEX_HEADER: \setlength{\oddsidemargin}{0.1in} 
+# LATEX_HEADER: \title{The demise of the spotted swamp frog}
+# LATEX_HEADER: \author{Rob J Hyndman}
+# LATEX_HEADER: \footer{
+# LATEX_HEADER: \textbf{Philipp Homan, MD, PhD}\\
+# LATEX_HEADER: phoman1@northwell.edu\\
+# LATEX_HEADER: github.com/philipphoman}
+#+LATEX_HEADER: \date{}
+# ----------------------------------------------------------------------
+** Latex macros                                               :ignore:
+# ----------------------------------------------------------------------
+#+LATEX_HEADER: \newcommand{\auth}{$^{\ast}$Philipp Homan, MD, PhD}
+#+LATEX_HEADER: \newcommand{\authemail}{phoman1@northwell.edu}
+#+LATEX_HEADER: \newcommand{\authtwitter}{@philipphoman}
+#+LATEX_HEADER: \newcommand{\authgithub}{github.com/philipphoman}
+# ----------------------------------------------------------------------
+** Authors and affiliations                                     :ignore:
+# ----------------------------------------------------------------------
+#+LATEX_HEADER: \author{
+#+LATEX_HEADER: Philipp Homan$^{1\ast}$, 
+#+LATEX_HEADER: Christina Fales$^{1}$, 
+#+LATEX_HEADER: Pamela DeRosse$^{1}$, 
+#+LATEX_HEADER: Philip Szeszko$^{1}$, 
+#+LATEX_HEADER: Delbert Robinson$^{1}$,   
+#+LATEX_HEADER: Todd Lencz$^{1}$, 
+#+LATEX_HEADER: Anil K. Malhotra$^{1}$
+#+LATEX_HEADER: \\
+#+LATEX_HEADER: \vspace{5mm}
+#+LATEX_HEADER: \normalsize{$^{1}$Department of Psychiatry,} 
+#+LATEX_HEADER: \normalsize{The Donald and Barbara Zucker}
+#+LATEX_HEADER: \normalsize{School of Medicine at Northwell/Hofstra,}
+#+LATEX_HEADER: \normalsize{Hempstead, NY}\\
+#+LATEX_HEADER: }
+# ----------------------------------------------------------------------
+** Buffer-wide source code blocks                               :ignore:
+# ----------------------------------------------------------------------
+# Set elisp variables need for nice formatting We want no new lines in
+# inline results and a paragraph size of 80 characters Important: this
+# has to be evaluated witch C-c C-c in order to work in the current
+# buffer
+#+BEGIN_SRC emacs-lisp :exports none :results silent
+
+; set timestamp format
+;(setq org-export-date-timestamp-format "%FT%T%z")
+(require 'org-wc)
+(flyspell-mode t)
+;(evil-declare-change-repeat 'company-complete)
+(setq synosaurus-choose-method 'popup)
+(synosaurus-mode t)
+(auto-complete-mode t)
+;(ac-config-default)
+;(add-to-list 'ac-modes 'org-mode)
+(linum-mode t)
+(whitespace-mode t)
+(setq org-babel-inline-result-wrap "%s")
+(setq org-export-with-broken-links "mark")
+(setq fill-column 72)
+(setq whitespace-line-column 72)
+;(setq org-latex-caption-above '(table image))
+(setq org-latex-caption-above nil)
+(org-toggle-link-display)
+; don't remove logfiles at export
+(setq org-latex-remove-logfiles nil)
+
+; Keybindings
+; (global-set-key (kbd "<f7> c") "#+CAPTION: ")
+(defun setfillcolumn72 ()
+	 (interactive)
+   (setq fill-column 72)
+	 )
+
+(defun setfillcolumn42 ()
+	 (interactive)
+   (setq fill-column 42)
+ )
+(define-key org-mode-map (kbd "C-c c #") "#+CAPTION: ")
+(define-key org-mode-map (kbd "C-c l #") "#+LATEX_HEADER: ")
+(define-key org-mode-map (kbd "C-c f c 4 2") 'setfillcolumn42)
+(define-key org-mode-map (kbd "C-c f c 7 2") 'setfillcolumn72)
+
+(setq org-odt-category-map-alist
+    '(("__Figure__" "*Figure*" "value" "Figure" org-odt--enumerable-image-p)))
+
+
+; let ess not ask for starting directory
+(setq ess-ask-for-ess-directory nil)
+
+;(setq org-latex-pdf-process '("latexmk -pdflatex='xelatex
+;-output-directory=../output/tex/ -interaction nonstopmode' -pdf
+;-bibtex -f %f"))
+(setq org-latex-logfiles-extensions 
+    (quote("bcf" "blg" "fdb_latexmk" "fls" 
+    "figlist" "idx" "log" "nav" "out" "ptc" 
+    "run.xml" "snm" "toc" "vrb" "xdv")))
+
+; deactivate link resolving
+(setq org-activate-links nil)
+
+; set tags identation
+(setq org-tags-column -72)
+
+#+END_SRC
+#
+#
+#
+# ----------------------------------------------------------------------
+** End preamble                                                 :ignore:
+# ----------------------------------------------------------------------
+
+* References                                                    :ignore:
+\bibliographystyle{nature}
+\nobibliography{master} 
+* The poster
+:PROPERTIES:
+:BEGIN:
+:BEAMER_env: fullframe
+:END:
+
+** Code                                                       :ignore:
+# First, make sure all variables are availabe
+#+HEADER: :exports none
+#+BEGIN_SRC R :results silent :session
+if (!(grepl("src", getwd())))
+  setwd("../../../../src")
+source("fe_func.R")
+source("bmi_load.R")
+
+# R version
+rvers <- version$version.string
+
+# Python version
+# pyvers <- system("python --version")
+# pysurfvers <- system("pip freeze | grep pysurf")
+#pyvers <- "2.7.13"
+#pysurfvers <- "0.7"
+pyplusvers <- system("pyv=$(python -V 2>&1); echo $pyv", intern=TRUE)
+pysurfplusvers <- system("pip list | grep pysurf", intern=TRUE)
+
+#+END_SRC
+
+** Left column                                                  :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.45
+:BEAMER_opt: [t]
+:END:
+*** Background                                                 :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+- Schizophrenia has long been considered a disorder of dysconnectivity
+  in the brain
+- Using graph theory, we computed statistical similarity networks for
+  each individual (Fig [[figflowchart]], [[figshrinkage]]) in two
+  early-phase schizophrenia cohorts src_R[:session]{parse_n("sz")}
+  {{{results((/N/ = 82))}}} and in healthy controls
+  src_R[:session]{parse_n("hc")} {{{results((/N/ = 77))}}} and tested
+  whether network architecture predicted treatment response
+
+*** Methods: Structural similarity networks                    :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+
+\captionsetup{justification=justified,width=.85\linewidth}
+#+NAME: figflowchart
+#+CAPTION: *Analysis flow chart.*
+#+CAPTION: The similarity between any pair of region was
+#+CAPTION: estimated by calculating the
+#+CAPTION: Kullback-Leibler (KL) divergence of their
+#+CAPTION: probability distributions, resulting in 
+#+CAPTION: a similarity matrix. 
+#+CAPTION: The similarity matrix 
+#+CAPTION: was then thresholded into a binary matrix to 
+#+CAPTION: create a network graph. Graph-based 
+#+CAPTION: degree (or hubness) for each node was then
+#+CAPTION: calculated for each individual participant. 
+#+CAPTION: Nodal degrees were then entered as
+#+CAPTION: predictors into a partial
+#+CAPTION: least squares regression, using individual
+#+CAPTION: treatment response slopes as outcome
+#+CAPTION: measure.
+#+ATTR_LATEX: :width 0.85\textwidth 
+[[file:fe_freesurfer_flowchart.pdf]]
+
+*** Methods: Individual treatment response                     :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+
+\captionsetup{justification=justified,width=.85\linewidth}
+#+NAME: figshrinkage
+#+CAPTION: *Partial pooling to regularize individual response slopes.* 
+#+CAPTION: *A.* *Individual time courses for all participants*
+#+CAPTION: *from the first schizophrenia cohort.* 
+#+CAPTION: Partial pooling regularized
+#+CAPTION: the individual slopes, i.e., the influence
+#+CAPTION: of outliers with only few assessments was attenuated. 
+#+CAPTION: *B.* *The partial pooling effect*
+#+CAPTION: *is demonstrated by the individual responses being*
+#+CAPTION: *pulled toward the average treatment effect.*
+#+CAPTION: As a consequence, outliers are less influential.
+#+CAPTION: *C, D. The same is shown for the second schizophrenia*
+#+CAPTION: *cohort.*
+#+CAPTION: Dotted ellipses indicate confidence regions for the
+#+CAPTION: average treatment effect.
+#+ATTR_LATEX: :width 0.85\textwidth
+[[file:fe_freesurfer_shrinkage.pdf]]
+
+** Right column                                                 :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.45
+:BEAMER_opt: [t]
+:END:
+*** Results: Partial least squares regression                  :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+
+- Individual differences in the configuration of structural similarity
+  networks explained a significant proportion of variance in treatment
+  response (Fig. [[figplsbrains]])
+- Exploratory analysis: increased clustering and decreased network
+  integration in patients compared to controls (Fig. [[figge]])
+
+\captionsetup{justification=justified,width=.8\linewidth}
+#+NAME: figplsbrains
+#+CAPTION: *PLS scores with individual treatment* 
+#+CAPTION: *response and contribution of cortical nodes*
+#+CAPTION: *in the schizophrenia cohort*
+#+CAPTION: Nodal degree for each of 
+#+CAPTION: the src_R[:session]{n_nodes} {{{results(68)}}}
+#+CAPTION: was entered into a partial least squares (PLS) 
+#+CAPTION: regression, with individual treatment response 
+#+CAPTION: slopes as outcome measure. The first two
+#+CAPTION: PLS components explained a significant proportion
+#+CAPTION: of variance in treatment response. *A, B. The first*
+#+CAPTION: *PLS component correlated most strongly with*
+#+CAPTION: *nodal degree of orbito- and prefrontal cortices*
+#+CAPTION: *and posterior cingulate cortex.* Note that
+#+CAPTION: more negative slopes meant better
+#+CAPTION: treatment response. 
+#+CAPTION: *B, C. The second PLS component correlated most*
+#+CAPTION: *most strongly with superior temporal, precentral,*
+#+CAPTION: *and middle cingulate brain areas.*
+#+ATTR_LATEX: :width 0.8\textwidth
+[[file:fe_freesurfer_plsbrains.pdf]]
+
+*** Results: Increased clustering in patients                  :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+
+\captionsetup{justification=justified,width=0.8\linewidth}
+#+NAME: figge
+#+CAPTION: *A. Decreased network integration in*
+#+CAPTION: *schizophrenia patients compared to controls.*
+#+CAPTION: Means with error bands
+#+CAPTION: are shown.
+#+CAPTION: *B. Increased clustering in schizophrenia patients*
+#+CAPTION: *compared to controls.*
+#+CAPTION: Means with error bands are shown.
+#+CAPTION: Non-overlapping error bands 
+#+CAPTION: indicate significant group differences (/P/ < 0.05).
+#+ATTR_LATEX: :width 0.8\textwidth 
+[[file:fe_freesurfer_graphsum_individual_2plots.pdf]]
+
+*** Conclusions                                                :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+- These data suggest a potential link between brain network morphology
+  and clinical outcome in early-phase schizophrenia
+
+*** Disclosure                                                 :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+
+\tiny
+Dr. Robinson has served as a consultant for Asubio, Otsuka, and Shire
+and has received grants from Bristol-Myers Squibb, Janssen, and
+Otsuka. Dr. Kane has served as a consultant for Alkermes, Eli Lilly,
+Forest, Forum, Genentech, Intracellular Therapies, Janssen, Johnson &
+Johnson, Lundbeck, Otsuka, Reviva, Roche, Sunovion, and Teva; he has
+received honoraria for lectures from Genentech, Janssen, Lundbeck, and
+Otsuka; and he is a shareholder in MedAvante and Vanguard Research
+Group. Dr. Lencz is a consultant for Genomind. Dr. Malhotra has served
+as a consultant for Forum Pharmaceuticals and has served on a scientific
+advisory board for Genomind. The other authors report no financial
+relationships with commercial interests.
